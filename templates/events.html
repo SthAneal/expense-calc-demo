@@ -1,0 +1,24 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<h2>Events</h2>
+{% if email %}<p>Logged in as <strong>{{ email }}</strong></p>{% else %}
+<p><em>Not logged in — go back home and get a magic link.</em></p>
+{% endif %}
+<ul>
+  {% for e in events %}
+    <li><a href="/event/{{e.id}}?{{ request.query_params.urlencode() }}">[{{ e.currency }} {{ "%.2f"|format(e.total_amount) }}] {{ e.title }}</a></li>
+  {% else %}
+    <li>No events yet</li>
+  {% endfor %}
+</ul>
+
+<h3>Create Event</h3>
+<form action="/events/create?{{ request.query_params.urlencode() }}" method="post">
+  <input name="title" placeholder="Title" required>
+  <input name="description" placeholder="Description">
+  <input name="currency" value="AUD">
+  <input name="total_amount" type="number" step="0.01" placeholder="Total Amount" required>
+  <button type="submit">Create</button>
+</form>
+{% endblock %}

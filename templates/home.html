@@ -1,0 +1,10 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<h2>Expense Calculator Demo</h2>
+<p>Enter your email to get a demo "magic link" (no email is sent; it redirects locally):</p>
+<form action="/auth/request-magic-link" method="post" onsubmit="event.preventDefault(); fetch('/auth/request-magic-link', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'email='+encodeURIComponent(document.getElementById('em').value)}).then(r=>r.json()).then(j=>{location.href=j.login_url})">
+  <input id="em" type="email" placeholder="you@example.com" required>
+  <button type="submit">Get Link</button>
+</form>
+{% endblock %}

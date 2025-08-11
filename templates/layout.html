@@ -1,0 +1,16 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense Calculator Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>body{font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;margin:2rem}input,button{padding:.5rem;margin:.25rem 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.card{border:1px solid #ddd;padding:1rem;border-radius:.5rem}.muted{color:#666;font-size:.9em}</style>
+</head>
+<body>
+  <a href="/?{{ request.query_params.urlencode() }}">Home</a> · 
+  <a href="/events?{{ request.query_params.urlencode() }}">Events</a>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>

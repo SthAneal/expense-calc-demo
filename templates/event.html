@@ -1,0 +1,77 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<h2>{{ ev.title }} <span class="muted">({{ ev.currency }} {{ "%.2f"|format(ev.total_amount) }})</span></h2>
+<p>{{ ev.description }}</p>
+
+<div class="grid">
+  <div class="card">
+    <h3>Participants</h3>
+    <ul>
+      {% for p in parts %}
+        <li>#{{ p.id }} — {{ p.display_name }}</li>
+      {% else %}
+        <li>No participants</li>
+      {% endfor %}
+    </ul>
+
+    <h4>Invite</h4>
+    <form action="/event/{{ev.id}}/invite?{{ request.query_params.urlencode() }}" method="post">
+      <input name="invite_email" type="email" placeholder="friend@example.com" required>
+      <button type="submit">Create Invite</button>
+    </form>
+    <p class="muted">To join: visit <code>/event/{{ev.id}}/join/{TOKEN}</code> using the token stored for that invite.</p>
+  </div>
+
+  <div class="card">
+    <h3>Set Pledge</h3>
+    <form action="/event/{{ev.id}}/pledge?{{ request.query_params.urlencode() }}" method="post">
+      <label>Participant ID</label>
+      <input name="participant_id" type="number" required>
+      <label>Type</label>
+      <select name="ptype" required>
+        <option value="equal">equal</option>
+        <option value="volunteer_overpay">volunteer_overpay</option>
+        <option value="underpay_bid">underpay_bid</option>
+      </select>
+      <label>Value Type</label>
+      <select name="value_type">
+        <option value="">(none for equal)</option>
+        <option value="percent">percent</option>
+        <option value="fixed">fixed</option>
+      </select>
+      <label>Value</label>
+      <input name="value" type="number" step="0.01">
+      <button type="submit">Save Pledge</button>
+    </form>
+
+    <h4>Existing Pledges</h4>
+    <ul>
+      {% for pl in pledges %}
+        <li>#{{ pl.id }} p{{ pl.participant_id }} — {{ pl.type }} {% if pl.value_type %} ({{ pl.value_type }} {{ pl.value }}){% endif %} {% if not pl.active %}[inactive]{% endif %}</li>
+      {% else %}
+        <li>None</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Final Contributions</h3>
+  <pre>{{ allocs | tojson(indent=2) }}</pre>
+  <canvas id="chart" width="600" height="300"></canvas>
+</div>
+
+<script>
+fetch("/event/{{ev.id}}/chart-data")
+  .then(r=>r.json())
+  .then(data=>{
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: { labels: data.labels, datasets: [{ data: data.values }] },
+      options: { responsive: true }
+    });
+  });
+</script>
+{% endblock %}
